@@ -2,17 +2,34 @@ import pictures from './pictures.js'
 import './style.scss'
 
 console.clear()
+
+/*------------------------------
+Map
+------------------------------*/
+const map = (from1, to1, from2, to2, v) => {
+  return from2 + ((v - from1) * (to2 - from2)) / (to1 - from1);
+}
+
+
 /*--------------------
 Settings
 --------------------*/
 const settings = {
-  cols: 7,
-  rows: 5,
+  cols: 5,
+  rows: 6,
   gap: 20,
   width: 360,
   height: 560,
   background: '#ffffff'
 }
+
+let finalTexture
+const $grid = document.getElementById('drag-grid')
+window.addEventListener('mousemove', (e) => {
+  const x = map(0, window.innerWidth, 2000, -2000, e.clientX)
+  const y = map(0, window.innerHeight, 2000, -2000, e.clientY)
+  $grid.style.backgroundPosition = `${x}px ${y}px`
+})
 
 
 /*--------------------
@@ -41,15 +58,8 @@ onResize()
 
 
 /*--------------------
-Listeners
---------------------*/
-window.addEventListener('resize', onResize)
-
-
-/*--------------------
 Draw
 --------------------*/
-let finalTexture = null 
 const draw = () => {
   ctx.fillStyle = settings.background
   ctx.rect(0, 0, win.w, win.h)
@@ -59,12 +69,12 @@ const draw = () => {
   for (let i = 0; i < settings.rows; i++) {
     for (let j = 0; j < settings.cols; j++) {
       const index = j + i * settings.cols
-      
+
       let x = (settings.gap / 2) + j * (settings.gap + settings.width)
       const y = (settings.gap / 2) + i * (settings.gap + settings.height)
-      
+
       if (i % 2 === 1) {
-        x += settings.width / 2  
+        x += settings.width / 2
       }
       const width = settings.width
       const height = settings.height
@@ -78,7 +88,7 @@ const draw = () => {
       ctx.fillText(index, x + settings.width / 2, y + settings.height / 2 + 3)
 
       ctx.drawImage(document.querySelectorAll('img')[index], x, y, settings.width, settings.height)
-      
+
       // Repeat last
       if (j === settings.cols - 1 && i % 2 === 1) {
         ctx.beginPath()
@@ -92,19 +102,19 @@ const draw = () => {
         ctx.font = "10px Arial"
         // ctx.fillText(index, 10, y + settings.height / 2 + 3)
       }
-    } 
+    }
   }
-  
+
   ctx.strokeStyle = 'blue'
   ctx.beginPath()
-  ctx.rect(0, 0, (settings.width + settings.gap) * settings.cols, (settings.height + settings.gap) * settings.rows)
+  const w = (settings.width + settings.gap) * settings.cols
+  const h = (settings.height + settings.gap) * settings.rows
+  ctx.rect(0, 0, w, h)
   // ctx.stroke()
 
   // Final Texture
   finalTexture = canvas.toDataURL('image/jpeg', 0.7)
-  const img = document.createElement('img')
-  img.src = finalTexture
-  document.body.appendChild(img)
+  $grid.style.backgroundImage = `url(${finalTexture})`
 }
 
 
