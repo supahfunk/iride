@@ -1,0 +1,16 @@
+{
+  "name": "drag-infinity-grid",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "localhost & parcel app.js & open http://localhost:8080",
+    "build": "parcel build app.js --out-dir dist"
+  },
+  "dependencies": {
+    "sass": "^1.25.0"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.10"
+  }
+}
