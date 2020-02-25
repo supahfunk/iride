@@ -9,22 +9,3 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-
-
-#images {
-  img {
-    display: none;
-  }
-}
-
-#texture {
-  display: none;
-}
-
-#drag-grid {
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background-repeat: repeat;
-  // transition: background-position 1.5s cubic-bezier(0, 0, 0.11, 0.96);
-}
