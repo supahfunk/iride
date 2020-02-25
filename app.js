@@ -10,6 +10,10 @@ const map = (from1, to1, from2, to2, v) => {
   return from2 + ((v - from1) * (to2 - from2)) / (to1 - from1);
 }
 
+const lerp = (start, end, t) => {
+  return start * (1 - t) + end * t
+}
+
 
 /*--------------------
 Settings
@@ -23,13 +27,28 @@ const settings = {
   background: '#ffffff'
 }
 
+
+let bgX = 0
+let bgY = 0
+let mouseX = 0
+let mouseY = 0
 let finalTexture
 const $grid = document.getElementById('drag-grid')
 window.addEventListener('mousemove', (e) => {
-  const x = map(0, window.innerWidth, 2000, -2000, e.clientX)
-  const y = map(0, window.innerHeight, 2000, -2000, e.clientY)
-  $grid.style.backgroundPosition = `${x}px ${y}px`
+  mouseX = map(0, window.innerWidth, 10, -10, e.clientX)
+  mouseY = map(0, window.innerHeight, 10, -10, e.clientY)
 })
+
+const animateBG = () => {
+  requestAnimationFrame(animateBG)
+  bgX += mouseX
+  bgY += mouseY
+
+  bgX = lerp(bgX, bgX + mouseX, .8)
+  bgY = lerp(bgY, bgY + mouseY, .8)
+  $grid.style.backgroundPosition = `${bgX}px ${bgY}px`
+}
+animateBG()
 
 
 /*--------------------
