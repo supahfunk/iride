@@ -25,8 +25,11 @@ const infinityGrid = () => {
   /*------------------------------
   Vars
   ------------------------------*/
+  let dragging = false
   let bgX = 0
   let bgY = 0
+  let startX = 0
+  let startY = 0
   let mouseX = 0
   let mouseY = 0
   let finalTexture
@@ -128,12 +131,12 @@ const infinityGrid = () => {
   ------------------------------*/
   const readyToGrid = () => {
     requestAnimationFrame(readyToGrid)
-    const x = map(mouseX, 0, window.innerWidth, 2, -2)
-    const y = map(mouseY, 0, window.innerHeight, 2, -2)
-
-    bgX = lerp(bgX, bgX + x, .8)
-    bgY = lerp(bgY, bgY + y, .8)
-
+    if (!dragging) {
+      mouseX = lerp(mouseX, 0, .08)
+      mouseY = lerp(mouseY, 0, .08)
+    }
+    bgX = lerp(bgX, bgX + mouseX, .23)
+    bgY = lerp(bgY, bgY + mouseY, .23)
     $grid.style.backgroundPosition = `${bgX}px ${bgY}px`
   }
 
@@ -142,16 +145,25 @@ const infinityGrid = () => {
   Ready To Webgl
   ------------------------------*/
   const readyToWebgl = () => {
-    window.console.log('ok ---->', )
   }
 
 
   /*------------------------------
   Mouse Move
   ------------------------------*/
+  window.addEventListener('mousedown', (e) => {
+    startX = e.clientX
+    startY = e.clientY
+    dragging = true
+  })
   window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX
-    mouseY = e.clientY
+    if (dragging) {
+      mouseX = (e.clientX - startX) * 0.15
+      mouseY = (e.clientY - startY) * 0.15
+    }
+  })
+  window.addEventListener('mouseup', () => {
+    dragging = false
   })
 }
 
