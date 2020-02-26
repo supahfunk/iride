@@ -28,13 +28,14 @@ const infinityGrid = () => {
   let dragging = false
   let bgX = 0
   let bgY = 0
+  let newBgX = 0
+  let newBgY = 0
   let startX = 0
   let startY = 0
   let mouseX = 0
   let mouseY = 0
   let finalTexture
   const $grid = document.getElementById('drag-grid')
-
 
   /*--------------------
   Setup
@@ -127,21 +128,6 @@ const infinityGrid = () => {
 
 
   /*------------------------------
-  Ready To Grid
-  ------------------------------*/
-  const readyToGrid = () => {
-    requestAnimationFrame(readyToGrid)
-    if (!dragging) {
-      mouseX = lerp(mouseX, 0, .08)
-      mouseY = lerp(mouseY, 0, .08)
-    }
-    bgX = lerp(bgX, bgX + mouseX, .23)
-    bgY = lerp(bgY, bgY + mouseY, .23)
-    $grid.style.backgroundPosition = `${bgX}px ${bgY}px`
-  }
-
-
-  /*------------------------------
   Ready To Webgl
   ------------------------------*/
   const readyToWebgl = () => {
@@ -149,21 +135,42 @@ const infinityGrid = () => {
 
 
   /*------------------------------
+  Ready To Grid
+  ------------------------------*/
+  const readyToGrid = () => {
+    requestAnimationFrame(readyToGrid)
+    let friction = .11
+    if (dragging) {
+      friction = .23
+    }
+    newBgX = lerp(newBgX, bgX + mouseX, friction)
+    newBgY = lerp(newBgY, bgY + mouseY, friction)
+    $grid.style.backgroundPosition = `${newBgX}px ${newBgY}px`
+  }
+
+
+  /*------------------------------
   Mouse Move
   ------------------------------*/
   window.addEventListener('mousedown', (e) => {
+    mouseX = 0
+    mouseY = 0
     startX = e.clientX
     startY = e.clientY
+    bgX = newBgX
+    bgY = newBgY
     dragging = true
+    document.body.classList.add('dragging')
   })
   window.addEventListener('mousemove', (e) => {
     if (dragging) {
-      mouseX = (e.clientX - startX) * 0.15
-      mouseY = (e.clientY - startY) * 0.15
+      mouseX = (e.clientX - startX)
+      mouseY = (e.clientY - startY)
     }
   })
   window.addEventListener('mouseup', () => {
     dragging = false
+    document.body.classList.remove('dragging')
   })
 }
 
