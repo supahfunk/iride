@@ -1,5 +1,4 @@
 import { map, lerp } from '../utils'
-import * as PIXI from 'pixi.js'
 import pictures from '../../pictures.js'
 import './style.scss'
 
@@ -118,6 +117,9 @@ const infinityGrid = () => {
     // Texture ready
     readyToGrid()
     $grid.style.backgroundImage = `url(${finalTexture})`
+
+    // ReadyToWebgl
+    readyToWebgl()
   }
 
 
@@ -134,29 +136,13 @@ const infinityGrid = () => {
 
     $grid.style.backgroundPosition = `${bgX}px ${bgY}px`
   }
-  readyToGrid()
-
 
 
   /*------------------------------
   Ready To Webgl
   ------------------------------*/
   const readyToWebgl = () => {
-    const $canvas = document.getElementById('canvas')
-    const app = new PIXI.Application({
-      autoResize: true,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      resolution: devicePixelRatio,
-      backgroundColor: 0xffffff
-    })
-    $canvas.appendChild(app.view)
-    const stage = new PIXI.Container()
-    const texture = PIXI.Texture.from(finalTexture)
-    const tilingSprite = new PIXI.TilingSprite(texture, window.innerWidth, window.innerHeight)
-    stage.addChild(tilingSprite)
-    tilingSprite.tileScale.x = 2
-    tilingSprite.tileScale.y = 2
+    window.console.log('ok ---->', )
   }
 
 
