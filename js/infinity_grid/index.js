@@ -1,4 +1,5 @@
 import {Renderer, Program, Color, Mesh, Triangle, Texture} from 'ogl'
+import gsap from 'gsap'
 import { map, lerp } from '../utils'
 import pictures from '../../pictures.js'
 import './style.scss'
@@ -38,6 +39,9 @@ export default function() {
   let finalTexture
   let finalTextureWidth
   let finalTextureHeight
+  const displacement = {
+    value: 0
+  }
   const $grid = document.getElementById('drag-grid')
 
   /*--------------------
@@ -173,12 +177,25 @@ export default function() {
     uniform float uRatioY;
     uniform float uOffsetX;
     uniform float uOffsetY;
-    uniform vec3 uColor;
+    uniform float uDisplacement;
     uniform sampler2D uMap;
     
     varying vec2 vUv;
+
+    float circle(in vec2 _st, in float _radius, in float blurriness){
+      vec2 dist = _st;
+      return 1.-smoothstep(_radius-(_radius*blurriness), _radius+(_radius*blurriness), dot(dist,dist)*4.0);
+    }
+
     void main() {
       vec2 uv = vUv;
+      
+      vec2 circleUV = vUv;
+      circleUV -= .5;
+      circleUV *= uDisplacement * 0.3;
+      float c = circle(circleUV, 1.2, 1.2);
+      
+      uv *= c / (1. - uDisplacement * .07);
       
       uv.x /= uRatioX;
       uv.y /= uRatioY;
@@ -187,7 +204,7 @@ export default function() {
       uv.y += uOffsetY;
       
       vec3 tex = texture2D(uMap, uv).rgb;
-      
+
       gl_FragColor.rgb = tex;
       gl_FragColor.a = 1.0;
     }
@@ -226,7 +243,7 @@ export default function() {
             uRatioY: {value: texture.height / window.innerHeight},
             uOffsetX: {value: 1.},
             uOffsetY: {value: 1.},
-            uColor: {value: new Color(0.3, 0.2, 0.5)},
+            uDisplacement: {value: displacement.value},
             uMap: {value: texture},
         },
     })
@@ -245,7 +262,8 @@ export default function() {
         
         program.uniforms.uOffsetX.value = (newBgX / window.innerHeight) * .5
         program.uniforms.uOffsetY.value = (newBgY / window.innerHeight) * .5
-        
+        program.uniforms.uDisplacement.value = displacement.value
+
         renderer.render({scene: mesh})
     }
 
@@ -286,6 +304,13 @@ export default function() {
     bgY = newBgY
     dragging = true
     document.body.classList.add('dragging')
+
+    gsap.killTweensOf(displacement)
+    gsap.to(displacement, {
+      value: 1,
+      duration: .3,
+      ease: 'power3.out'
+    })
   }
   window.addEventListener('mousedown', (e) => {
     if (e.button === 2) return
@@ -320,6 +345,12 @@ export default function() {
   const handleMouseUp = () => {
     dragging = false
     document.body.classList.remove('dragging')
+    gsap.killTweensOf(displacement)
+    gsap.to(displacement, {
+      value: 0,
+      duration: .8,
+      ease: 'power4.out'
+    })
   }
   window.addEventListener('mouseup', handleMouseUp)
   window.addEventListener('mouseleave', handleMouseUp)

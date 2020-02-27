@@ -27,11 +27,11 @@ Infinity Grid
     height: 100vh;
   }
 
-  .dragging & {
-    transform: scale(0.95);
-    cursor: grabbing;
-    transition-duration: .4s;
-  }
+  // .dragging & {
+  //   transform: scale(0.95);
+  //   cursor: grabbing;
+  //   transition-duration: .4s;
+  // }
 }
 
 #drag-grid {

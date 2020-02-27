@@ -8,6 +8,7 @@
     "build": "parcel build app.js --out-dir dist"
   },
   "dependencies": {
+    "gsap": "^3.2.1",
     "ogl": "^0.0.40",
     "sass": "^1.25.0"
   },
