@@ -20,7 +20,7 @@ const settings = {
 /*------------------------------
 Infinity Grid
 ------------------------------*/
-const infinityGrid = () => {
+export default function() {
 
 
   /*------------------------------
@@ -139,11 +139,15 @@ const infinityGrid = () => {
     finalTexture = $texture.toDataURL('image/jpeg', 0.7)
 
     
-    // Texture ready
-    // readyToGrid()
+    /*------------------------------
+    Render CSS
+    ------------------------------*/
     // $grid.style.backgroundImage = `url(${finalTexture})`
+    // readyToCSS()
     
-    // ReadyToWebgl
+    /*------------------------------
+    Render Webgl
+    ------------------------------*/
     readyToWebgl()
   }
   
@@ -176,8 +180,8 @@ const infinityGrid = () => {
     void main() {
       vec2 uv = vUv;
       
-      uv.x *= 1. / uRatioX;
-      uv.y *= 1. / uRatioY;
+      uv.x /= uRatioX;
+      uv.y /= uRatioY;
 
       uv.x -= uOffsetX;
       uv.y += uOffsetY;
@@ -202,8 +206,8 @@ const infinityGrid = () => {
     img.onload = () => texture.image = img
     texture.width = finalTextureWidth
     texture.height = finalTextureHeight
-    texture.wrapS = 'REPEAT'
-    texture.wrapT = 'REPEAT'
+    texture.wrapS = gl.REPEAT
+    texture.wrapT = gl.REPEAT
 
     //         position                uv
     //      (-1, 3)                  (0, 2)
@@ -213,14 +217,13 @@ const infinityGrid = () => {
     //   (-1, -1)   (3, -1)        (0, 0)   (2, 0)
 
     const geometry = new Triangle(gl)
-
     const program = new Program(gl, {
         vertex,
         fragment,
         uniforms: {
             uTime: {value: 0},
-            uRatioX: {value: finalTextureWidth / window.innerWidth},
-            uRatioY: {value: finalTextureHeight / window.innerHeight},
+            uRatioX: {value: texture.width / window.innerWidth},
+            uRatioY: {value: texture.height / window.innerHeight},
             uOffsetX: {value: 1.},
             uOffsetY: {value: 1.},
             uColor: {value: new Color(0.3, 0.2, 0.5)},
@@ -248,8 +251,8 @@ const infinityGrid = () => {
 
     function resize() {
       renderer.setSize(window.innerWidth, window.innerHeight)
-      program.uniforms.uRatioX.value = finalTextureWidth / window.innerWidth
-      program.uniforms.uRatioY.value = finalTextureHeight / window.innerHeight
+      program.uniforms.uRatioX.value = texture.width / window.innerWidth
+      program.uniforms.uRatioY.value = texture.height / window.innerHeight
     }
     window.addEventListener('resize', resize, false)
     resize()
@@ -259,8 +262,8 @@ const infinityGrid = () => {
   /*------------------------------
   Ready To Grid
   ------------------------------*/
-  const readyToGrid = () => {
-    requestAnimationFrame(readyToGrid)
+  const readyToCSS = () => {
+    requestAnimationFrame(readyToCSS)
     let friction = .11
     if (dragging) {
       friction = .23
@@ -272,28 +275,53 @@ const infinityGrid = () => {
 
 
   /*------------------------------
-  Mouse Move
+  Mouse Down
   ------------------------------*/
-  window.addEventListener('mousedown', (e) => {
+  const handleMouseDown = (e) => {
     mouseX = 0
     mouseY = 0
-    startX = e.clientX
-    startY = e.clientY
+    startX = e.clientX || e.touches[0].clientX
+    startY = e.clientY || e.touches[0].clientY
     bgX = newBgX
     bgY = newBgY
     dragging = true
     document.body.classList.add('dragging')
+  }
+  window.addEventListener('mousedown', (e) => {
+    if (e.button === 2) return
+    handleMouseDown(e)
   })
-  window.addEventListener('mousemove', (e) => {
+  window.addEventListener('touchstart', (e) => {
+    handleMouseDown(e)
+    e.preventDefault()
+    e.stopPropagation()
+  })
+
+
+  /*------------------------------
+  Mouse Move
+  ------------------------------*/
+  const handleMouseMove = (e) => {
     if (dragging) {
-      mouseX = (e.clientX - startX)
-      mouseY = (e.clientY - startY)
+      const x = e.clientX || e.touches[0].clientX
+      const y = e.clientY || e.touches[0].clientY
+      e.preventDefault()
+      mouseX = (x - startX)
+      mouseY = (y - startY)
     }
-  })
-  window.addEventListener('mouseup', () => {
+  }
+  window.addEventListener('mousemove', handleMouseMove)
+  window.addEventListener('touchmove', handleMouseMove)
+
+
+  /*------------------------------
+  Mouse Up
+  ------------------------------*/
+  const handleMouseUp = () => {
     dragging = false
     document.body.classList.remove('dragging')
-  })
-}
-
-export default infinityGrid
+  }
+  window.addEventListener('mouseup', handleMouseUp)
+  window.addEventListener('mouseleave', handleMouseUp)
+  window.addEventListener('touchend', handleMouseUp)
+} 

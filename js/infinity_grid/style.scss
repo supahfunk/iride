@@ -20,6 +20,7 @@ Infinity Grid
   left: 0;
   transition: transform .6s cubic-bezier(0, 0, 0.11, 0.96);
   cursor: grab;
+  pointer-events: none;
 
   canvas {
     width: 100%;
@@ -41,9 +42,9 @@ Infinity Grid
   transition: transform .6s cubic-bezier(0, 0, 0.11, 0.96);
   cursor: grab;
 
-  .dragging & {
-    transform: scale(0.95);
-    cursor: grabbing;
-    transition-duration: .4s;
-  }
+  // .dragging & {
+  //   transform: scale(0.95);
+  //   cursor: grabbing;
+  //   transition-duration: .4s;
+  // }
 }
