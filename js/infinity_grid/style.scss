@@ -18,10 +18,18 @@ Infinity Grid
   z-index: 10;
   top: 0;
   left: 0;
+  transition: transform .6s cubic-bezier(0, 0, 0.11, 0.96);
+  cursor: grab;
 
   canvas {
     width: 100%;
     height: 100vh;
+  }
+
+  .dragging & {
+    transform: scale(0.95);
+    cursor: grabbing;
+    transition-duration: .4s;
   }
 }
 
@@ -30,11 +38,12 @@ Infinity Grid
   height: 100vh;
   overflow: hidden;
   background-repeat: repeat;
-  transition: transform .5s cubic-bezier(0, 0, 0.11, 0.96);
+  transition: transform .6s cubic-bezier(0, 0, 0.11, 0.96);
   cursor: grab;
 
   .dragging & {
     transform: scale(0.95);
     cursor: grabbing;
+    transition-duration: .4s;
   }
 }
