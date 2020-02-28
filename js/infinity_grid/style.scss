@@ -32,6 +32,10 @@ Infinity Grid
     height: 100%;
     box-shadow: inset 0 0 0 0 #fff;
     transition: box-shadow .3s ease-out;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   canvas {

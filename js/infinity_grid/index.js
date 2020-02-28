@@ -162,9 +162,11 @@ export default function() {
   Ready To Webgl
   ------------------------------*/
   const readyToWebgl = () => {
-    const renderer = new Renderer()
+    const renderer = new Renderer({
+      antialias: true,
+      canvas: document.querySelector('#canvas canvas')
+    })
     const gl = renderer.gl
-    document.querySelector('#canvas').appendChild(gl.canvas)
     
     gl.clearColor(1, 1, 1, 1)
     
@@ -177,6 +179,7 @@ export default function() {
     texture.height = finalTextureHeight
     texture.wrapS = gl.REPEAT
     texture.wrapT = gl.REPEAT
+    texture.minFilter = gl.LINEAR
 
     //         position                uv
     //      (-1, 3)                  (0, 2)
