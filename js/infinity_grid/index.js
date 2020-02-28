@@ -1,4 +1,4 @@
-import {Renderer, Program, Color, Mesh, Triangle, Texture} from 'ogl'
+import {Renderer, Program, Mesh, Triangle, Texture} from 'ogl'
 import gsap from 'gsap'
 import { lerp } from '../utils'
 import pictures from '../../pictures.js'
