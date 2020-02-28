@@ -193,9 +193,11 @@ export default function() {
       vec2 circleUV = vUv;
       circleUV -= .5;
       circleUV *= uDisplacement * 0.3;
-      float c = circle(circleUV, 1.2, 1.2);
+      float c = circle(circleUV, 1.2, 1.3);
       
       uv *= c / (1. - uDisplacement * .07);
+      uv.x -= (.025 * uDisplacement);
+      uv.y -= (.05 * uDisplacement);
       
       uv.x /= uRatioX;
       uv.y /= uRatioY;
@@ -205,7 +207,13 @@ export default function() {
       
       vec3 tex = texture2D(uMap, uv).rgb;
 
+      // Shift RGB
+      // tex.r = mix(tex.r, texture2D(uMap, vec2(uv.x - 0.004 * uDisplacement, uv.y)).r, uDisplacement);
+      // tex.b = mix(tex.b, texture2D(uMap, vec2(uv.x + 0.004 * uDisplacement, uv.y)).b, uDisplacement);
+
       gl_FragColor.rgb = tex;
+
+
       gl_FragColor.a = 1.0;
     }
     `
@@ -308,7 +316,7 @@ export default function() {
     gsap.killTweensOf(displacement)
     gsap.to(displacement, {
       value: 1,
-      duration: .3,
+      duration: .25,
       ease: 'power3.out'
     })
   }
