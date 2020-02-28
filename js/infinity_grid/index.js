@@ -143,18 +143,35 @@ export default function() {
     finalTextureWidth = (settings.width + settings.gap) * settings.cols
     finalTextureHeight = (settings.height + settings.gap) * settings.rows
     ctx.rect(0, 0, finalTextureWidth, finalTextureHeight)
-    finalTexture = $texture.toDataURL('image/jpeg', 0.7)
+    const textureNotPowered = $texture.toDataURL('image/jpeg', 0.7)
 
-    
     /*------------------------------
-    Render CSS or WEBGL
+    Texture Pow2 4096
     ------------------------------*/
-    if (window.innerWidth < 768) {
-      $grid.style.backgroundImage = `url(${finalTexture})`
-      readyToCSS()
-    } else {
+    const imageNotPowered = new Image()
+    imageNotPowered.onload = () => {
+      $texture.width = 4096
+      $texture.height = 4096
+      $texture.style.width = `${4096}px`
+      $texture.style.height = `${4096}px`
+      ctx.scale(devicePixelRatio, devicePixelRatio)
+      ctx.rect(0, 0, 4096, 4096)
+      ctx.drawImage(imageNotPowered, 0, 0, finalTextureWidth, finalTextureHeight, 0, 0, 4096, 4096)
+      finalTexture = $texture.toDataURL('image/jpeg', 0.7)
+      
+      /*------------------------------
+      Render CSS or WEBGL
+      ------------------------------*/
+      // if (window.innerWidth < 768) {
+      //   $grid.style.backgroundImage = `url(${finalTexture})`
+      //   readyToCSS()
+      // } else {
+      //   readyToWebgl()
+      // }
       readyToWebgl()
     }
+    imageNotPowered.src = textureNotPowered
+    
   }
   
   
@@ -200,6 +217,7 @@ export default function() {
             uOffsetY: {value: 1.},
             uDisplacement: {value: displacement.value},
             uMap: {value: texture},
+            uMobileZoom: {value: window.innerWidth < 767 ? 1 : 0}
         },
     })
 

@@ -5,6 +5,7 @@ uniform float uRatioY;
 uniform float uOffsetX;
 uniform float uOffsetY;
 uniform float uDisplacement;
+uniform float uMobileZoom;
 uniform sampler2D uMap;
 varying vec2 vUv;
 
@@ -44,7 +45,7 @@ void main() {
   fisheye = barrelDistort(fisheye, 1. - d * uDisplacement * intensity);
 
   // Ripristino zoom
-  uv *= .005;
+  uv *= .005 + uMobileZoom;
 
   // Aggiunto fisheye
   uv += fisheye;
