@@ -1,7 +1,9 @@
 import {Renderer, Program, Color, Mesh, Triangle, Texture} from 'ogl'
 import gsap from 'gsap'
-import { map, lerp } from '../utils'
+import { lerp } from '../utils'
 import pictures from '../../pictures.js'
+import vertex from './vertex.glsl'
+import fragment from './fragment.glsl'
 import './style.scss'
 
 
@@ -36,6 +38,7 @@ export default function() {
   let startY = 0
   let mouseX = 0
   let mouseY = 0
+  let dragFriction = 1
   let finalTexture
   let finalTextureWidth
   let finalTextureHeight
@@ -144,15 +147,14 @@ export default function() {
 
     
     /*------------------------------
-    Render CSS
+    Render CSS or WEBGL
     ------------------------------*/
-    // $grid.style.backgroundImage = `url(${finalTexture})`
-    // readyToCSS()
-    
-    /*------------------------------
-    Render Webgl
-    ------------------------------*/
-    readyToWebgl()
+    if (window.innerWidth < 768) {
+      $grid.style.backgroundImage = `url(${finalTexture})`
+      readyToCSS()
+    } else {
+      readyToWebgl()
+    }
   }
   
   
@@ -160,64 +162,6 @@ export default function() {
   Ready To Webgl
   ------------------------------*/
   const readyToWebgl = () => {
-    const vertex = `
-    attribute vec2 uv;
-    attribute vec2 position;
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = vec4(position, 0, 1);
-    }
-    `
-    
-    const fragment = `
-    precision highp float;
-    uniform float uTime;
-    uniform float uRatioX;
-    uniform float uRatioY;
-    uniform float uOffsetX;
-    uniform float uOffsetY;
-    uniform float uDisplacement;
-    uniform sampler2D uMap;
-    
-    varying vec2 vUv;
-
-    float circle(in vec2 _st, in float _radius, in float blurriness){
-      vec2 dist = _st;
-      return 1.-smoothstep(_radius-(_radius*blurriness), _radius+(_radius*blurriness), dot(dist,dist)*4.0);
-    }
-
-    void main() {
-      vec2 uv = vUv;
-      
-      vec2 circleUV = vUv;
-      circleUV -= .5;
-      circleUV *= uDisplacement * 0.3;
-      float c = circle(circleUV, 1.2, 1.3);
-      
-      uv *= c / (1. - uDisplacement * .07);
-      uv.x -= (.025 * uDisplacement);
-      uv.y -= (.05 * uDisplacement);
-      
-      uv.x /= uRatioX;
-      uv.y /= uRatioY;
-
-      uv.x -= uOffsetX;
-      uv.y += uOffsetY;
-      
-      vec3 tex = texture2D(uMap, uv).rgb;
-
-      // Shift RGB
-      // tex.r = mix(tex.r, texture2D(uMap, vec2(uv.x - 0.004 * uDisplacement, uv.y)).r, uDisplacement);
-      // tex.b = mix(tex.b, texture2D(uMap, vec2(uv.x + 0.004 * uDisplacement, uv.y)).b, uDisplacement);
-
-      gl_FragColor.rgb = tex;
-
-
-      gl_FragColor.a = 1.0;
-    }
-    `
-    
     const renderer = new Renderer()
     const gl = renderer.gl
     document.querySelector('#canvas').appendChild(gl.canvas)
@@ -261,10 +205,10 @@ export default function() {
     requestAnimationFrame(update)
     function update(t) {
         requestAnimationFrame(update)
-
+        
         const friction = dragging ? .23 : .11
-        newBgX = lerp(newBgX, bgX + mouseX, friction)
-        newBgY = lerp(newBgY, bgY + mouseY, friction)
+        newBgX = lerp(newBgX, bgX + mouseX * dragFriction, friction)
+        newBgY = lerp(newBgY, bgY + mouseY * dragFriction, friction)
 
         program.uniforms.uTime.value = t * 0.001
         
@@ -294,8 +238,8 @@ export default function() {
     if (dragging) {
       friction = .23
     }
-    newBgX = lerp(newBgX, bgX + mouseX, friction)
-    newBgY = lerp(newBgY, bgY + mouseY, friction)
+    newBgX = lerp(newBgX, bgX + mouseX * dragFriction, friction)
+    newBgY = lerp(newBgY, bgY + mouseY * dragFriction, friction)
     $grid.style.backgroundPosition = `${newBgX}px ${newBgY}px`
   }
 
@@ -312,11 +256,12 @@ export default function() {
     bgY = newBgY
     dragging = true
     document.body.classList.add('dragging')
+    dragFriction = 1
 
     gsap.killTweensOf(displacement)
     gsap.to(displacement, {
       value: 1,
-      duration: .25,
+      duration: .4,
       ease: 'power3.out'
     })
   }
@@ -352,11 +297,12 @@ export default function() {
   ------------------------------*/
   const handleMouseUp = () => {
     dragging = false
+    dragFriction = 1.4
     document.body.classList.remove('dragging')
     gsap.killTweensOf(displacement)
     gsap.to(displacement, {
       value: 0,
-      duration: .8,
+      duration: .4,
       ease: 'power4.out'
     })
   }
