@@ -1,13 +1,14 @@
 {
-  "name": "drag-infinity-grid",
+  "name": "lines",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "localhost & parcel app.js & open http://localhost:8080",
+    "start": "parcel index.html --open",
     "build": "parcel build app.js --out-dir dist"
   },
   "dependencies": {
+    "@mobilabs/easing": "^1.0.0",
     "gsap": "^3.2.2",
     "ogl": "^0.0.40",
     "sass": "^1.25.0"
